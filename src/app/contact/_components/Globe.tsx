@@ -5,57 +5,62 @@ import { useEffect, useRef } from 'react';
 
 // https://github.com/shuding/cobe
 
-export default function Globe () {
+export default function Globe({ className }: { className?: string }) {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
     useEffect(() => {
         if (!canvasRef.current) return;
 
         let phi = 0;
+        let width = 0;
+
+        // Resize handler to keep globe crisp
+        const onResize = () =>
+            canvasRef.current && (width = canvasRef.current.offsetWidth);
+        window.addEventListener('resize', onResize);
+        onResize();
 
         const globe = createGlobe(canvasRef.current, {
             devicePixelRatio: 2,
-            width: 600 * 2,
-            height: 600 * 2,
+            width: width * 2,
+            height: width * 2,
             phi: 0,
             theta: 0,
             dark: 1,
             diffuse: 1.2,
             mapSamples: 16000,
-            mapBrightness: 8.2,
-            baseColor: [0.337, 0.514, 0.349],
-            // baseColor: [0.86, 1.31, 0.89],
-            // {"baseColor":{"r":86,"g":131,"b":89}}
-            // baseColor: [0.3, 0.3, 0.3],
-            markerColor: [0.1, 0.8, 1],
-            // {"markerColor":{"r":255,"g":255,"b":255}}
-            glowColor: [0.059, 0.141, 0.051],
-            // glowColor: [0, 0, 0],
-            // glowColor: [1, 1, 1],
-            // {"glowColor":{"r":15,"g":36,"b":13}}
-            markers: [],
+            mapBrightness: 6,
+            baseColor: [0.1, 0.25, 0.05], // Dark emerald base
+            markerColor: [0.6, 1, 0.4], // Bright neon green markers
+            glowColor: [0.3, 0.6, 0.1], // Greenish glow
+            markers: [
+                { location: [37.5665, 126.9780], size: 0.1 } // Seoul approx
+            ],
             onRender: state => {
-                // Called on every animation frame.
-                // `state` will be an empty object, return updated params.
                 state.phi = phi;
-                phi += 0.003;
+                phi += 0.005;
+                state.width = width * 2;
+                state.height = width * 2;
             },
         });
 
         return () => {
             globe.destroy();
+            window.removeEventListener('resize', onResize);
         };
     }, []);
 
     return (
-        <canvas
-            ref={canvasRef}
-            style={{
-                width: 600,
-                height: 600,
-                maxWidth: '100%',
-                aspectRatio: 1,
-            }}
-        />
+        <div className={className}>
+             <canvas
+                ref={canvasRef}
+                style={{
+                    width: '100%',
+                    height: '100%',
+                    maxWidth: '100%',
+                    aspectRatio: 1,
+                }}
+            />
+        </div>
     );
 }

@@ -129,17 +129,37 @@ export default function Home () {
         // markers: true
       })
 
-      ScrollTrigger.create({
-        trigger: '.clip_img',
-        start: 'bottom bottom',
-        end: 'center center',
-        pin: false,
-        scrub: true,
-        animation: gsap.to('.clip_img', {
-          clipPath: 'inset(0px 0px 0px 400px round 20px)',
-          duration: 5
-        }),
-        markers: true
+      // clip_img animation with responsive settings
+      const clipMm = gsap.matchMedia()
+      
+      clipMm.add('(min-width: 769px)', () => {
+        ScrollTrigger.create({
+          trigger: '.clip_img',
+          start: 'bottom bottom',
+          end: 'center center',
+          pin: false,
+          scrub: true,
+          animation: gsap.to('.clip_img', {
+            clipPath: 'inset(0px 0px 0px 300px round 20px)',
+            duration: 5
+          }),
+          markers: true
+        })
+      })
+      
+      clipMm.add('(max-width: 768px)', () => {
+        ScrollTrigger.create({
+          trigger: '.clip_img',
+          start: 'bottom bottom',
+          end: 'top center',
+          pin: false,
+          scrub: 6,
+          animation: gsap.to('.clip_img', {
+            clipPath: 'inset(0px 0px 0px 300px round 20px)',
+            duration: 8
+          }),
+          markers: true
+        })
       })
 
       // ScrollTrigger.create({
@@ -362,8 +382,8 @@ export default function Home () {
   return (
     <main className='main' ref={mainRef}>
       <section className='home first' id='sec01'>
-        <video className='back_video' autoPlay muted loop plays-inline="true">
-          <source src='/disc/images/main_video.mp4' type='video/mp4' />
+        <video className='back_video' autoPlay muted loop playsInline preload='metadata' style={{scale: 1.2}}> 
+          <source src='/disc/images/main_video_02.mp4' type='video/mp4' />
           Your browser is not supported!
         </video>
         <div className='content'>

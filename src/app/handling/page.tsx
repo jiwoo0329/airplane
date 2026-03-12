@@ -1,20 +1,57 @@
 'use client';
 
+import { useLayoutEffect, useRef } from 'react'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 // import 'swiper/css/navigation';
 import { Navigation } from 'swiper/modules';
 
+gsap.registerPlugin(ScrollTrigger)
+
 export default function Handling () {
+    const mainRef = useRef<HTMLDivElement>(null)
+
+    useLayoutEffect(() => {
+      const ctx = gsap.context(() => {
+         const tl = gsap.timeline({ delay: 0.2 });
+
+         // Sub visual title animation
+         tl.to('.sub_visual h3', {
+          opacity: 1,
+          y: 0,
+          duration: 1.2,
+          ease: 'power3.out',
+         })
+         .to('.sub_visual p', {
+          opacity: 1,
+          y: 0,
+          duration: 1.0,
+          ease: 'power3.out',
+        }, "-=0.8")
+  
+         // Sub visual background animation
+        gsap.fromTo('.sub_visual_bg', 
+            { scale: 1.2 },
+            { scale: 1, duration: 2.5, ease: 'power2.out' }
+        )
+      }, mainRef)
+  
+      return () => ctx.revert()
+    }, [])
+
     return (
         <>
-            <div className='sub_layout handling'>
+            <div className='sub_layout handling' ref={mainRef}>
                 <div>
                     <div className='sub_visual'>
+            <div className='sub_visual_bg'></div>
                         <div className='container'>
                             <h3 data-text='AIRCRAFT HANDLING'>
                                 AIRCRAFT HANDLING
                             </h3>
+                            <p>Seamless Ground Support & Operational Perfection</p>
                         </div>
                     </div>
                 </div>

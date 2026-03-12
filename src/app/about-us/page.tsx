@@ -9,10 +9,32 @@ gsap.registerPlugin(ScrollTrigger)
 gsap.registerPlugin(Flip)
 
 export default function AboutUs() {
-  const contentsRef = useRef<HTMLDivElement>(null)
+  const mainRef = useRef<HTMLDivElement>(null)
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
+      const bannerTl = gsap.timeline({ delay: 0.2 });
+
+      // Sub visual title animation
+      bannerTl.to('.sub_visual h3', {
+        opacity: 1,
+        y: 0,
+        duration: 1.2,
+        ease: 'power3.out',
+      })
+      .to('.sub_visual p', {
+        opacity: 1,
+        y: 0,
+        duration: 1.0,
+        ease: 'power3.out',
+      }, "-=0.8")
+
+       // Sub visual background animation
+       gsap.fromTo('.sub_visual_bg', 
+        { scale: 1.2 },
+        { scale: 1, duration: 2.5, ease: 'power2.out' }
+      )
+
       // 배경 확대 애니메이션
       ScrollTrigger.create({
         trigger: '.bg_top',
@@ -146,7 +168,7 @@ export default function AboutUs() {
         })
       })
 
-    }, contentsRef)
+    }, mainRef)
 
     return () => {
       ctx.revert()
@@ -155,15 +177,17 @@ export default function AboutUs() {
   }, [])
 
   return (
-    <div className='sub_layout aboutus'>
+    <div className='sub_layout aboutus' ref={mainRef}>
       <div>
         <div className='sub_visual'>
+          <div className='sub_visual_bg'></div>
           <div className='container'>
             <h3 data-text='ABOUT US'>ABOUT US</h3>
+            <p>Your Trusted Partner in Aviation Excellence</p>
           </div>
         </div>
       </div>
-      <div className='sub_content' ref={contentsRef}>
+      <div className='sub_content'>
         <section>
           <div className='bg_top'>
             <div className='bg'></div>

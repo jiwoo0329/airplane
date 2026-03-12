@@ -1,7 +1,8 @@
 'use client';
-import { useState, useRef, useLayoutEffect } from 'react';
+import { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { Globe } from 'lucide-react';
 
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
@@ -14,8 +15,63 @@ export default function Header () {
     // states
     const pathname = usePathname();
     const [scrolled, setScrolled] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    
+    // refs for mobile menu animation
+    const mobileMenuLinksRef = useRef<(HTMLLIElement | null)[]>([]);
+    const mobileLangRef = useRef<HTMLDivElement>(null);
 
-    useLayoutEffect(() => {
+    useEffect(()=>{
+        window.scrollTo(0, 0);
+    },[pathname])
+
+    // Mobile menu animation
+    useEffect(() => {
+        if (isMenuOpen) {
+            // 메뉴가 열릴 때: 링크들을 순차적으로 나타나게 함
+            gsap.fromTo(
+                mobileMenuLinksRef.current,
+                {
+                    opacity: 0,
+                    y: 30,
+                },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.6,
+                    stagger: 0.1,
+                    ease: 'power3.out',
+                    delay: 0.2,
+                }
+            );
+            
+            // 언어 선택 버튼도 애니메이션
+            gsap.fromTo(
+                mobileLangRef.current,
+                {
+                    opacity: 0,
+                    y: 20,
+                },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.5,
+                    ease: 'power2.out',
+                    delay: 0.6,
+                }
+            );
+        } else {
+            // 메뉴가 닫힐 때: 빠르게 사라지게 함
+            gsap.to([...mobileMenuLinksRef.current, mobileLangRef.current], {
+                opacity: 0,
+                y: -20,
+                duration: 0.3,
+                ease: 'power2.in',
+            });
+        }
+    }, [isMenuOpen]);
+
+    useEffect(() => {
         const showNav = gsap
             .from('#parallax__nav', {
                 yPercent: -200,
@@ -47,30 +103,26 @@ export default function Header () {
         //             ?.classList.remove('bg');
         //     },
         // });
-        if(pathname !== '/contact'){
           ScrollTrigger.create({
             start: '200px top',
             onEnter: () => setScrolled(true),
             onLeaveBack: () => setScrolled(false)
           })
-
-        }
     }, [pathname]);
 
     return (
         <>
             <nav
                 id='parallax__nav'
-                className={`${scrolled || pathname === '/contact' ? 'bg' : ''}`}
+                className={`${scrolled || isMenuOpen ? 'bg' : ''}`}
             >
                 <div className='nav_inner'>
                     <h1>
-                        <a href='/' id='logo' className='black'>
-                            항공사
-                        </a>
+                        <Link href='/' id='logo'>항공사</Link>
                     </h1>
 
-                    <ul>
+                    {/* Desktop Menu */}
+                    <ul className='desktop_only'>
                         <li>
                             <Link href='/about-us'>ABOUT US</Link>
                         </li>
@@ -85,64 +137,47 @@ export default function Header () {
                         </li>
                     </ul>
 
-                    <div className='lang'>
+                    <div className='lang desktop_only'>
                         <Link href='/'>
-                            <svg
-                                xmlns='http://www.w3.org/2000/svg'
-                                width='24'
-                                height='24'
-                                viewBox='0 0 24 24'
-                                fill='none'
-                            >
-                                <g clipPath='url(#clip0_25_1429)'>
-                                    <path
-                                        d='M3 12C3 13.1819 3.23279 14.3522 3.68508 15.4442C4.13738 16.5361 4.80031 17.5282 5.63604 18.364C6.47177 19.1997 7.46392 19.8626 8.55585 20.3149C9.64778 20.7672 10.8181 21 12 21C13.1819 21 14.3522 20.7672 15.4442 20.3149C16.5361 19.8626 17.5282 19.1997 18.364 18.364C19.1997 17.5282 19.8626 16.5361 20.3149 15.4442C20.7672 14.3522 21 13.1819 21 12C21 9.61305 20.0518 7.32387 18.364 5.63604C16.6761 3.94821 14.3869 3 12 3C9.61305 3 7.32387 3.94821 5.63604 5.63604C3.94821 7.32387 3 9.61305 3 12Z'
-                                        stroke='currentColor'
-                                        strokeWidth='2'
-                                        strokeLinecap='round'
-                                        strokeLinejoin='round'
-                                    />
-                                    <path
-                                        d='M3.6001 9H20.4001'
-                                        stroke='currentColor'
-                                        strokeWidth='2'
-                                        strokeLinecap='round'
-                                        strokeLinejoin='round'
-                                    />
-                                    <path
-                                        d='M3.6001 15H20.4001'
-                                        stroke='currentColor'
-                                        strokeWidth='2'
-                                        strokeLinecap='round'
-                                        strokeLinejoin='round'
-                                    />
-                                    <path
-                                        d='M11.5002 3C9.8155 5.69961 8.92236 8.81787 8.92236 12C8.92236 15.1821 9.8155 18.3004 11.5002 21'
-                                        stroke='currentColor'
-                                        strokeWidth='2'
-                                        strokeLinecap='round'
-                                        strokeLinejoin='round'
-                                    />
-                                    <path
-                                        d='M12.5 3C14.1847 5.69961 15.0778 8.81787 15.0778 12C15.0778 15.1821 14.1847 18.3004 12.5 21'
-                                        stroke='currentColor'
-                                        strokeWidth='2'
-                                        strokeLinecap='round'
-                                        strokeLinejoin='round'
-                                    />
-                                </g>
-                                <defs>
-                                    <clipPath id='clip0_25_1429'>
-                                        <rect
-                                            width='24'
-                                            height='24'
-                                            fill='currentColor'
-                                        />
-                                    </clipPath>
-                                </defs>
-                            </svg>
+                            <Globe size={20}/>
                             <span>KO</span>
                         </Link>
+                    </div>
+
+                    {/* Hamburger Button */}
+                    <div className={`menu_btn ${isMenuOpen ? 'active' : ''}`} onClick={() => {
+                        setIsMenuOpen(!isMenuOpen);
+                    }}>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+
+                {/* Mobile Menu Overlay */}
+                <div className={`mobile_menu ${isMenuOpen ? 'active' : ''}`}>
+                    <div className="mobile_menu_wrapper">
+                        <ul>
+                            <li ref={(el) => { mobileMenuLinksRef.current[0] = el; }}>
+                                <Link href='/about-us' onClick={() => setIsMenuOpen(false)}>ABOUT US</Link>
+                            </li>
+                            <li ref={(el) => { mobileMenuLinksRef.current[1] = el; }}>
+                                <Link href='/services' onClick={() => setIsMenuOpen(false)}>CHARTER SERVICES</Link>
+                            </li>
+                            <li ref={(el) => { mobileMenuLinksRef.current[2] = el; }}>
+                                <Link href='/handling' onClick={() => setIsMenuOpen(false)}>AIRCRAFT HANDLING</Link>
+                            </li>
+                            <li ref={(el) => { mobileMenuLinksRef.current[3] = el; }}>
+                                <Link href='/contact' onClick={() => setIsMenuOpen(false)}>CONTACT US</Link>
+                            </li>
+                        </ul>
+
+                        <div className='lang_mobile' ref={mobileLangRef}>
+                            <Link href='/' onClick={() => setIsMenuOpen(false)}>
+                               <Globe />
+                                <span>KO</span>
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </nav>

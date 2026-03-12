@@ -7,6 +7,7 @@ import "../../public/disc/css/style.css";
 import "../../public/disc/css/wanted-sans.css";
 import Header from "./includes/header";
 import Footer from "./includes/footer";
+import ToTopBtn from "./includes/ToTopBtn";
 import SmoothScroll from "@/components/SmoothScroll";
 
 // header
@@ -27,8 +28,8 @@ export default function RootLayout({
           <Header/>
           {children}
           <Footer/>
-
         </SmoothScroll>
+        <ToTopBtn/>
         </body>
     </html>
   );
